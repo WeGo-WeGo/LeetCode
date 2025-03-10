@@ -1,0 +1,67 @@
+class LRUCache {
+public:
+    int size;
+    LRUCache(int capacity) {
+        size = capacity;
+        
+    }
+    
+    int get(int key) {
+        if (!findkey(key)) //如果不再列表中
+				return -1;
+			updatekey(key); //更新使用時間
+			return getvalue(key);
+    }
+    
+    void put(int key, int value) {
+        if (findkey(key)) { //如果key已經存在，不用刪除東西，更新key和value就好
+				updatekeyandvalue(key, value); 
+				
+			}
+			else {
+				full_evict(); //如果不存在，先刪除最後使用項，並加入新的node
+				insertkeyandvalue(key, value);
+			}
+    }
+private:
+		list<pair<int,int>>  chache; //雙向鍊表，第一個整數為key，第二個整數為value
+		unordered_map<int, list<pair<int,int>>::iterator> chacherecord; //建立hash tabl，iterator是指向double_linking_list節點的指標
+		bool findkey(int key) {
+		auto itr = chacherecord.find(key); //find(key)函式如果找到key，則回傳key_value之為址，若沒有則回傳end()
+		if (itr != chacherecord.end()) {
+			return true;
+		}
+		return false;
+		}
+		int getvalue(int key) { //取得key(value)對應的值
+			return chacherecord[key]->second; //key(time)指向的pair的第二個數
+		}
+		
+		void insertkeyandvalue(int key,int value) {
+			chache.push_front(pair<int, int>(key, value)); //在雙向鍊表前面加入節點，並將key(time)指向他
+			chacherecord[key] = chache.begin();
+		}
+		void updatekey(int key) { //更新key(time)的使用時間
+			chache.splice(chache.begin(), chache, chacherecord[key]); //先用splice函式將最新使用的pair移道list的第一個
+			chacherecord[key] = chache.begin();
+		}
+		void updatekeyandvalue(int key, int value) { //更新key(value)的值
+			updatekey(key);
+			chache.begin()->second = value; //將key移動到list最前面，並更新值
+		}
+		
+		void full_evict() { //移除最久沒使用的key
+			if (chacherecord.size() == size) {
+				int key = chache.back().first;  // 取得最久未使用的 key
+				chacherecord.erase(key);  // 從 map 移除 key
+				chache.pop_back();  // 從 list 刪除
+			}
+		}
+};
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
