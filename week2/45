@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+
+        int n = nums.size(); // 紀錄最後要跳到多少
+        int times=0;           // 紀錄跳了幾次
+        int current_end=0;     // 紀錄每次跳躍的終點
+        int farthest=0;        // 跳躍最大格數;
+
+        for (int i = 0; i < n - 1; i++) {
+            farthest = max(farthest, i + nums[i]); //測試第times步能達到的最遠距離為何
+            if (i == current_end) { //當達到第times步的最遠距離後，步數+1，並更新最遠距離
+                times++;
+                current_end = farthest;
+                if (current_end >= n - 1) { //當達到或超出終點結束
+                    break;
+                }
+            }
+            
+        }
+         return times;
+    }
+};
