@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>&nums, int k) { //將數列和window寬度輸入，最後輸出解答向量
+	vector<int> result; //最大值串
+	deque<int> dq; //monotonic queue
+	for (int i = 0; i < nums.size(); i++) { //丟出dque的條件為，第一個元素的index已經離開k的範圍
+		if (!dq.empty() && dq.front() == i - k) {
+			dq.pop_front();
+		}
+		while (!dq.empty() && nums[dq.back()] < nums[i]) {
+			dq.pop_back(); //首先維護monotic queue之大小順序
+		}
+		dq.push_back(i);
+
+		if (i >= k - 1) { //當視窗大小達到 k 時，開始記錄結果
+			result.push_back(nums[dq.front()]);
+		}
+
+	}
+
+	return result;
+	
+}
+};
