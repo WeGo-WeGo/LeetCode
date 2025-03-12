@@ -1,0 +1,36 @@
+class Solution {
+public:
+    long long minimumReplacement(vector<int>& nums) {
+        long long operation=0;
+        for(int i = nums.size()-2;i>=0;i--){
+            long long current_next = nums[i+1];
+            long long current = nums[i];
+            if (current<=current_next){
+                continue;
+            }
+
+            long long cut_number = current/current_next;
+            long long remain = current%current_next;
+            if(remain == 0){
+                nums[i] = current_next;
+                operation+=(cut_number-1);
+                continue;
+
+            }
+
+           long long p = (current_next - remain)/(cut_number+1);
+            long long remain2 = remain+p*cut_number;
+            long long current_next2 = current_next - p;
+            if(current_next2==remain2){
+                nums[i]= remain2;
+            }
+            else{
+                nums[i]= current_next2-1;
+            }
+            operation += cut_number;
+
+
+        }
+        return operation;
+    }
+};
