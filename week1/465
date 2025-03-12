@@ -1,0 +1,72 @@
+class LFUCache {
+public:
+    int capacity;
+    int min_freq;
+    unordered_map<int, pair<int, int>> data;  // key -> (value, freq)
+    unordered_map<int, list<int>> freq_list;  // freq -> list of keys (FIFO)
+    unordered_map<int, list<int>::iterator> key_iter;  // key -> position in freq_list
+
+    LFUCache(int capacity) {
+        this->capacity = capacity;
+        this->min_freq = 0;
+    }
+
+    int get(int key) {
+        if (data.find(key) == data.end()) {
+            return -1;
+        }
+        updateFrequency(key);
+        return data[key].first;
+    }
+
+    void put(int key, int value) {
+        if (capacity == 0) return;
+
+        if (data.find(key) != data.end()) {
+            // **更新 value 並增加頻率**
+            data[key].first = value;
+            updateFrequency(key);
+        } else {
+            if (data.size() == capacity) {
+                evict();
+            }
+            // **插入新 key**
+            data[key] = { value, 1 };  // value = `value`, freq = `1`
+            freq_list[1].push_back(key);
+            key_iter[key] = --freq_list[1].end();
+            min_freq = 1;  // 新插入的元素，最小頻率一定是 1
+        }
+    }
+
+private:
+    void updateFrequency(int key) {
+        int freq = data[key].second;  // 取得當前 freq
+        data[key].second++;  // 更新新的 freq
+        
+        // **從原來的 freq_list 移除**
+        freq_list[freq].erase(key_iter[key]);
+        if (freq_list[freq].empty()) {
+            freq_list.erase(freq);
+            if (min_freq == freq) min_freq++;  // 如果 min_freq 剛好是被清空的 freq，就遞增
+        }
+
+        // **移動到新的 freq_list**
+        freq_list[freq + 1].push_back(key);
+        key_iter[key] = --freq_list[freq + 1].end();
+    }
+
+    void evict() {
+        // **找到最小頻率的 key**
+        int old_key = freq_list[min_freq].front();
+        freq_list[min_freq].pop_front();
+
+        // **從資料結構中移除**
+        data.erase(old_key);
+        key_iter.erase(old_key);
+
+        // **如果 min_freq 的列表空了，就刪掉這個 freq**
+        if (freq_list[min_freq].empty()) {
+            freq_list.erase(min_freq);
+        }
+    }
+};
