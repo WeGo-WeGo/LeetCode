@@ -1,1 +1,16 @@
-
+class Solution {
+public:
+    int numRescueBoats(vector<int>& people, int limit) {
+        sort(people.begin(), people.end());  // 先排序
+        int left = 0, right = people.size() - 1;
+        int boats = 0;
+        while (left <= right) {
+        if (people[left] + people[right] <= limit) {  // 最輕 + 最重可以一起搭船
+            left++;
+        }
+        right--;  // 最重的人一定要上船
+        boats++;  // 需要一艘船
+        }
+        return boats;
+    }
+};
