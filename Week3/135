@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int candy(vector<int>& ratings) {
+        int n = ratings.size();
+        vector<int> candy(n, 1);  // 每個小朋友先發 1 顆糖果
+
+        // 左到右遍歷，確保右邊高分的小朋友糖果較多
+        for (int i = 1; i < n; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                candy[i] = candy[i - 1] + 1;
+            }
+        }
+         // 右到左遍歷，確保左邊高分的小朋友糖果較多
+        for (int i = n - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                candy[i] = max(candy[i], candy[i + 1] + 1);
+            }
+        }
+
+    // 計算總糖果數
+        return accumulate(candy.begin(), candy.end(), 0);
+    }
+
+
+    
+};
