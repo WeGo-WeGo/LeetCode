@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int intersectionSizeTwo(vector<vector<int>>& intervals) {
+        // 先按照end升序排列，若end相同則start降序
+        sort(intervals.begin(), intervals.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[1] == b[1] ? a[0] > b[0] : a[1] < b[1];
+        });
+
+        int result = 0;
+        vector<int> chosen_numbers;  // 用來存放選擇的數字
+
+        for (const auto& interval : intervals) {
+            int start = interval[0], end = interval[1];
+
+            // 檢查目前選的數字是否能夠覆蓋此區間
+            if (chosen_numbers.empty() || chosen_numbers[chosen_numbers.size() - 1] < start) {
+                // 如果最後的數字都不能覆蓋此區間，則需要選擇兩個新的數字
+                result += 2;
+                chosen_numbers.push_back(end - 1);
+                chosen_numbers.push_back(end);
+            } else if (chosen_numbers[chosen_numbers.size() - 2] < start) {
+                // 如果只剩一個數字能夠覆蓋，則需要選擇另外一個數字
+                result += 1;
+                chosen_numbers.push_back(end);
+            }
+        }
+
+        return result;
+    }
+};
