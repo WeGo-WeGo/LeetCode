@@ -1,0 +1,56 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty()) return nullptr;
+
+        // 分治合併，直到只剩一個結果
+        while (lists.size() > 1) {
+            vector<ListNode*> newLists;
+
+            // 每兩條串列合併一次
+            for (int i = 0; i < lists.size(); i += 2) {
+                if (i + 1 < lists.size()) {
+                    newLists.push_back(mergeTwoLists(lists[i], lists[i + 1]));
+                } else {
+                    newLists.push_back(lists[i]); // 奇數條時，最後一條直接放入
+                }
+            }
+
+            lists = newLists; // 更新 lists 為合併後的新串列
+        }
+
+        return lists[0]; // 最後剩下的就是結果
+    }
+
+    // 合併兩條排序鍊結串列（標準 Merge Two Lists）
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0); // 虛擬頭節點
+        ListNode* tail = &dummy;
+
+        while (l1 && l2) {
+            if (l1->val < l2->val) {
+                tail->next = l1;
+                l1 = l1->next;
+            } else {
+                tail->next = l2;
+                l2 = l2->next;
+            }
+            tail = tail->next;
+        }
+
+        // 將剩下未接完的串列直接接上
+        tail->next = (l1 != nullptr) ? l1 : l2;
+
+        return dummy.next;
+    }
+};
