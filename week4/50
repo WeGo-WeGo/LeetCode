@@ -1,0 +1,30 @@
+class Solution {
+public:
+    double myPow(double x, int n) {
+        // 將 n 轉為 long long，以防止當 n = INT_MIN 時取負會 overflow
+        long long N = n;
+
+        // 如果 n 是負的，轉換為正的並將 x 取倒數
+        if (N < 0) {
+            x = 1 / x;
+            N = -N;
+        } 
+    double result = 1.0; 
+
+        // 快速冪的迴圈實作
+        while (N > 0) {
+            // 若當前 N 為奇數，需乘上目前的 x
+            if (N % 2 == 1) {
+                result *= x;
+            }
+
+            // x 平方，N 除以 2
+            x *= x;
+            N /= 2;
+        }
+
+        return result;
+    }
+
+
+};
