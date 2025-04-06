@@ -1,0 +1,38 @@
+class Solution {
+public:
+    unordered_map<string, vector<string>> memo; // 記憶體表（避免重複遞迴）
+
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        unordered_set<string> dict(wordDict.begin(), wordDict.end());
+        return dfs(s, dict);
+    }
+
+    vector<string> dfs(string s, unordered_set<string>& dict) {
+        if (memo.count(s)) return memo[s]; // 有紀錄就直接返回
+
+        vector<string> res;
+
+        // base case：整個 s 是一個單字
+        if (dict.count(s)) {
+            res.push_back(s);
+        }
+
+        // 從 i=1 開始切割前綴 s.substr(0, i)
+        for (int i = 1; i < s.size(); ++i) {
+            string prefix = s.substr(0, i);
+            if (!dict.count(prefix)) continue;
+
+            // 對剩下的字串做遞迴
+            string suffix = s.substr(i);
+            vector<string> subResults = dfs(suffix, dict);
+
+            // 將 prefix 加入每一個遞迴結果
+            for (const string& sub : subResults) {
+                res.push_back(prefix + " " + sub);
+            }
+        }
+
+        memo[s] = res; // 儲存結果
+        return res;
+    }
+};
