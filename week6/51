@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;
+        vector<string> board(n, string(n, '.')); // 初始棋盤
+        unordered_set<int> cols;     // 欄位是否放過皇后
+        unordered_set<int> diag1;    // 主對角線 row - col
+        unordered_set<int> diag2;    // 副對角線 row + col
+
+        backtrack(0, n, board, cols, diag1, diag2, res);
+        return res;
+    }
+
+    void backtrack(int row, int n, vector<string>& board,
+                   unordered_set<int>& cols,
+                   unordered_set<int>& diag1,
+                   unordered_set<int>& diag2,
+                   vector<vector<string>>& res) {
+        // 終止條件：已放滿 n 列
+        if (row == n) {
+            res.push_back(board);
+            return;
+        }
+
+        for (int col = 0; col < n; ++col) {
+            // 如果欄位或對角線衝突，跳過
+            if (cols.count(col) || diag1.count(row - col) || diag2.count(row + col))
+                continue;
+
+            // 做選擇
+            board[row][col] = 'Q';
+            cols.insert(col);
+            diag1.insert(row - col);
+            diag2.insert(row + col);
+
+            // 遞迴到下一列
+            backtrack(row + 1, n, board, cols, diag1, diag2, res);
+
+            // 撤銷選擇（回溯）
+            board[row][col] = '.';
+            cols.erase(col);
+            diag1.erase(row - col);
+            diag2.erase(row + col);
+        }
+    }
+};
