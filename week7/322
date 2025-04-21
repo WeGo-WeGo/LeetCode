@@ -1,0 +1,22 @@
+class Solution {
+public:
+   int coinChange(vector<int>& coins, int amount) {
+    // 建立 dp 陣列，初始設為 amount + 1，代表「不可能的大值」
+    vector<int> dp(amount + 1, amount + 1);
+    dp[0] = 0; // 湊出金額 0 不需要任何硬幣
+
+    // 遍歷每個金額
+    for (int i = 1; i <= amount; ++i) {
+        // 嘗試使用每一種硬幣
+        for (int coin : coins) {
+            if (i - coin >= 0) {
+                // 嘗試使用 coin，更新 dp[i]
+                dp[i] = min(dp[i], dp[i - coin] + 1);
+            }
+        }
+    }
+
+    // 如果 dp[amount] 還是初始值，代表無法湊出
+    return dp[amount] > amount ? -1 : dp[amount];
+}
+};
