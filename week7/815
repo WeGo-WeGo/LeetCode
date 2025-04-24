@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {
+        if(source == target) return 0;
+
+        unordered_map<int , vector<int>> stopToBuses;  //這個stop有哪些buses停靠
+        for(int bus=0 ; bus < routes.size(); bus++){
+            for(int stop : routes[bus]){
+                stopToBuses[stop].push_back(bus);
+            } //stop -> bus 之對應
+        }
+
+        queue<pair<int,int>> q; //(目前站牌、以搭乘公車數量)
+        unordered_set<int> visitedStops; //已經訪問過之站牌
+        unordered_set<int> visitedBuses; //已經訪問過之公車
+
+        q.push({source,0});
+        visitedStops.insert(source);
+
+        while(!q.empty()){
+            auto[curStop , buses] = q.front();
+            q.pop();
+
+            for(int bus : stopToBuses[curStop]){
+                if(visitedBuses.count(bus)) continue; //確保一台公車只搭一次
+                visitedBuses.insert(bus); 
+
+                for(int stop : routes[bus]){
+                    if(stop == target) return buses+1;
+                    if(!visitedStops.count(stop)){
+                        q.push({stop,buses+1});  //若此車站並未訪問過則加入queue等一下處理
+                        visitedStops.insert(stop);
+                    }
+                }
+
+            }
+        }
+
+    return -1; //沒辦法到達
+
+    }
+};
