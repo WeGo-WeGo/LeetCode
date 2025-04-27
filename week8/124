@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maxPathSum(TreeNode* root) {
+        int maxSum = INT_MIN;  // 用來記錄最大的路徑和
+        helper(root, maxSum);  // 調用遞迴幫助函式
+        return maxSum;  // 返回最大路徑和
+    }
+
+private:
+    int helper(TreeNode* root, int& maxSum) {
+        if (!root) return 0;  // 基本情況：如果節點為空，返回0
+
+        // 遞迴處理左右子樹
+        int left = max(helper(root->left, maxSum), 0);  // 左子樹的最大路徑和（負數不要）
+        int right = max(helper(root->right, maxSum), 0);  // 右子樹的最大路徑和（負數不要）
+
+        // 計算當前節點為轉折點時的最大路徑和
+        int currentPathSum = root->val + left + right;
+
+        // 更新全局最大路徑和
+        maxSum = max(maxSum, currentPathSum);
+
+        // 返回當前節點能提供的最大路徑和（只能往左或右延伸）
+        return root->val + max(left, right);
+    }
+};
