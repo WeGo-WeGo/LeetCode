@@ -1,0 +1,19 @@
+lass Solution {
+public:
+    int paintWalls(vector<int>& cost, vector<int>& time) {
+        int n = cost.size();
+        vector<int> dp(n + 1, INT_MAX / 2);  // 為避免 overflow
+        dp[0] = 0;  // 0 面牆花費 0
+
+        for (int i = 0; i < n; ++i) {
+            vector<int> new_dp = dp;
+            for (int j = 0; j <= n; ++j) {
+                int next = min(n, j + time[i] + 1);  // 有薪工人做一面，免費工人可同步做 time[i]
+                new_dp[next] = min(new_dp[next], dp[j] + cost[i]);
+            }
+            dp = new_dp;
+        }
+
+        return dp[n];
+    }
+};
