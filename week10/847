@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int shortestPathLength(vector<vector<int>>& graph) {
+        int n = graph.size();
+        if(n==1) return 0;
+        queue<pair<int,int>> q;
+        vector<vector<bool>> visited(n, vector<bool>(1<<n, false)); //利用bitmask用二進位來表達拜訪過哪個節點
+        for(int i = 0; i<n; i++){
+            int mask =(1<<i);//用shift 1來代表只拜訪i的mask
+            q.push({i,mask});
+            visited[i][mask] = true;
+
+
+        }
+        int steps = 0;
+        while(!q.empty()){
+            int a = q.size();
+            for(int i =0;i<a;i++){
+                auto [node,mask]=q.front();
+                q.pop();
+                if(mask ==(1<<n)-1) return steps;//全部都是1代表全部拜訪過
+                for(int i=0;i<graph[node].size();i++){
+                    int nei = graph[node][i];  // 取得第 i 個鄰居
+                    int nextMask = mask|(1<<nei); // 更新拜訪狀態用or把mask加入nei
+                    if (!visited[nei][nextMask]) {                 // 若這個狀態還沒訪問過
+                    visited[nei][nextMask] = true;             // 標記為已訪問
+                    q.push({nei, nextMask});                   // 將新狀態加入 BFS 隊列
+                     } 
+                     }
+                }
+                steps++;
+            }
+           return -1;
+        }
+
+};
