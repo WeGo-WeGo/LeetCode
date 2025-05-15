@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int find(vector<int>& root, int x) {
+        if (root[x] != x) root[x] = find(root, root[x]);
+        return root[x];
+    }
+    vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
+        int n=edges.size();
+        vector<int> parent(n+1,0); //紀錄每個節點的復節點
+        vector<int> cand1, cand2; //紀錄有兩個副節點的兩邊
+
+        //處裡有雙父節點的部分
+        for(int i=0;i<n;i++){
+            int u = edges[i][0];
+            int v = edges[i][1];
+            if(parent[v]==0){
+                parent[v] = u;
+                
+            }
+            else{
+                cand1 = {parent[v], v};
+                cand2 = {u, v};
+                edges[i][1] = 0;
+            }
+        }
+        //處理行程環的部分
+        vector<int> root(n+1,0);
+        for(int i =0;i<=n;i++){
+            root[i] = i; //初始化自己為自己的根
+        }
+        
+        for(int i=0; i<edges.size(); i++){
+            vector<int>& edge = edges[i];
+            int u = edge[0];
+            int v = edge[1];
+            if(v == 0) continue;
+            int pu = find(root, u);
+            int pv = find(root, v);
+            if(pu == pv){// u 和 v 已經在同一個集合裡，再加這條邊會造成環
+                if(cand1.empty()) return edge;
+                else return cand1;
+            }
+            root[pv] = pu;
+        }
+        return cand2;
+    }
+};
