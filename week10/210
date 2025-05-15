@@ -1,0 +1,51 @@
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        // 建立鄰接表：graph[i] 存放「以課程 i 為前置的後續課程」
+        vector<vector<int>> graph(numCourses);
+
+        // indegree[i] 表示課程 i 目前還有幾個前置課程沒修
+        vector<int> indegree(numCourses, 0);
+
+        // 處理先修課資訊，建立圖與入度表
+        for (int i = 0; i < prerequisites.size(); i++) {
+            int a = prerequisites[i][0]; // a 是要修的課
+            int b = prerequisites[i][1]; // b 是 a 的前置課
+            graph[b].push_back(a);       // b 是前置，指向 a
+            indegree[a]++;               // a 多了一個前置課
+        }
+
+        queue<int> q;
+
+        // 將所有入度為 0（沒有前置課程）的課丟進 queue
+        for (int i = 0; i < numCourses; ++i) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        vector<int> result;
+
+        // 拓撲排序主迴圈：從入度為 0 的課開始修
+        while (!q.empty()) {
+            int course = q.front(); // 取出可以修的課
+            q.pop();
+            result.push_back(course); // 加入修課順序
+
+            // 處理這門課的後續課程
+            for (int i = 0; i < graph[course].size(); i++) {
+                int next = graph[course][i]; // 後續課程
+                indegree[next]--;            // 它的前置課完成了，入度 -1
+                if (indegree[next] == 0) {   // 若入度變 0，代表可以修了
+                    q.push(next);           // 丟進 queue 等待後續處理
+                }
+            }
+        }
+
+        // 如果無法修完所有課，表示有循環，回傳空陣列
+        if (result.size() != numCourses) return {};
+
+        // 回傳合法的修課順序
+        return result;
+    }
+}; // 👈這裡才是 class 的正確結尾
