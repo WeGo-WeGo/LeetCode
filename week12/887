@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int superEggDrop(int k, int n) {
+        // 建立 DP二維陣列操作次數m蛋數 k
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+
+        // 從1次操作開始
+        for (int m = 1; m <= n; m++) {
+            for (int eggs = 1; eggs <= k; eggs++) {
+                // 狀態轉移這次丟下去碎或不碎的兩種情況加上這一層
+                dp[m][eggs] = dp[m - 1][eggs - 1] + dp[m - 1][eggs] + 1;
+            }
+
+            // 如果已經能處理 n 層樓就回傳這個 m
+            if (dp[m][k] >= n) {
+                return m;
+            }
+        }
+
+        return n; // 最壞情況下，逐層試上去
+    }
+};
