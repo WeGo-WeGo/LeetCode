@@ -1,0 +1,61 @@
+class ExamRoom {
+private:
+    int N; // 總座位數
+    set<int> seats; // 紀錄目前已被佔用的座位
+
+public:
+    ExamRoom(int n) {
+        N = n;
+    }
+
+    int seat() {
+        // 如果目前沒有任何人，就直接坐在 0
+        if (seats.empty()) {
+            seats.insert(0);
+            return 0;
+        }
+
+        int prev = -1; // 前一個有人的座位
+        int maxDist = 0; // 目前找到的最大距離
+        int seatIndex = 0; // 要安排的座位索引
+
+        // 將 set 轉成 vector，方便用傳統 for 迴圈
+        vector<int> taken;
+        for (auto it = seats.begin(); it != seats.end(); ++it) {
+            taken.push_back(*it);
+        }
+
+        // 檢查最左邊座位（index 0）
+        if (taken[0] != 0) {
+            maxDist = taken[0];
+            seatIndex = 0;
+        }
+
+        // 檢查中間每一對座位之間的最大空間
+        for (int i = 0; i < taken.size() - 1; i++) {
+            int left = taken[i];
+            int right = taken[i + 1];
+            int dist = (right - left) / 2;
+            if (dist > maxDist) {
+                maxDist = dist;
+                seatIndex = left + dist;
+            }
+        }
+
+        // 檢查最右邊座位
+        if (taken[taken.size() - 1] != N - 1) {
+            int dist = N - 1 - taken[taken.size() - 1];
+            if (dist > maxDist) {
+                seatIndex = N - 1;
+            }
+        }
+
+        // 將該座位標記為已坐
+        seats.insert(seatIndex);
+        return seatIndex;
+    }
+
+    void leave(int p) {
+        seats.erase(p); // 考生離開座位 p
+    }
+};
