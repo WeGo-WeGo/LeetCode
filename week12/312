@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int maxCoins(vector<int>& nums) {
+        int n = nums.size();
+        
+        // 擴展原始陣列，左右加上虛擬氣球
+        vector<int> balloons(n + 2);
+        balloons[0] = 1;
+        balloons[n + 1] = 1;
+
+        for (int i = 0; i < n; i++) {
+            balloons[i + 1] = nums[i];
+        }
+
+        // 建立 dp 表
+        vector<vector<int>> dp(n + 2, vector<int>(n + 2, 0));
+
+        // l 是區間長度從 2 開始，要至少夾住 1 個氣球
+        for (int len = 2; len <= n + 1; len++) {
+            for (int left = 0; left <= n + 1 - len; left++) {
+                int right = left + len;
+
+                // 選一個氣球 k 作為最後一顆被戳的氣球
+                for (int k = left + 1; k < right; k++) {
+                    int total = dp[left][k] + balloons[left] * balloons[k] * balloons[right] + dp[k][right];
+                    dp[left][right] = max(dp[left][right], total);
+                }
+            }
+        }
+
+        return dp[0][n + 1]; // 回傳整體最大分數
+    }
+};
