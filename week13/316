@@ -1,0 +1,33 @@
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        vector<int> count(26,0);//紀錄次數
+        vector<bool> inStack(26, false); //紀錄是否出現在stack中
+
+        for(int i=0;i<s.size();i++){
+            count[s[i]-'a']++;//計算次數，並將asci 轉為0到26存到count
+        }
+        vector<char> stack;
+        for(int i=0;i<s.size();i++){
+            char c = s[i];
+            count[c-'a']--;//次數-1
+
+            if(inStack[c-'a']){
+                continue; //如果已經放過就不處裡
+            }
+            //c字典續stack最上面那個，且其在後面還有出現時，可以將最上面那個pop
+            while(!stack.empty() && c<stack.back() &&count[stack.back()-'a']>0){
+                inStack[stack.back()-'a'] = false;
+                stack.pop_back();
+            }
+            stack.push_back(c);
+            inStack[c-'a']=true;
+
+        }
+        string result ="";
+        for(int i=0;i<stack.size();i++){
+            result += stack[i];
+        } 
+        return result;
+    }
+};
