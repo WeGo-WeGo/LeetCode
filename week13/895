@@ -1,0 +1,41 @@
+class FreqStack {
+private:
+    unordered_map<int,int> freq; //value指向freq
+    unordered_map<int, stack<int>> group; //freq指向這個freq的值
+    int maxFreq;
+public:
+    FreqStack() {
+        maxFreq = 0;
+    }
+    
+    void push(int val) {
+        freq[val]++;
+        int f = freq[val];
+        if(group.find(f)==group.end()){//目前 map 中是否已經存在 key 為 f 的 stack
+            stack<int> newStack;
+            group[f] = newStack;//如果本來不在裡面，則開一個新的stack
+        }
+        group[f].push(val);
+        if(f>maxFreq){
+            maxFreq = f; //更新最大頻率
+        }
+    }
+
+    
+    int pop() {
+        int val = group[maxFreq].top();
+        group[maxFreq].pop();
+        freq[val]--;
+        if(group[maxFreq].empty()){
+            maxFreq--;
+        }
+        return val;
+    }
+};
+
+/**
+ * Your FreqStack object will be instantiated and called as such:
+ * FreqStack* obj = new FreqStack();
+ * obj->push(val);
+ * int param_2 = obj->pop();
+ */
