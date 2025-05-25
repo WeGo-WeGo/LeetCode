@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int,int> freq;
+        for(int i=0;i<nums.size();i++){
+            freq[nums[i]]++;
+
+        }
+        priority_queue<
+                        pair<int,int>, // 堆裡的資料型別，每個元素是 (頻率, 數字)
+                        vector<pair<int,int>>,// 底層用的容器是 vector（預設）
+                        greater<pair<int,int>>// 排序邏輯是「小的排前面」＝ 最小堆，因為要pop 頻率最小的
+                    > minHeap;
+        
+        for(auto it = freq.begin(); it != freq.end();it++){
+            minHeap.push({it->second, it->first});//頻率小的會自動排在堆頂
+            if(minHeap.size()>k){
+                minHeap.pop();
+            }
+        }
+        vector<int> result;
+        while (!minHeap.empty()) {
+            result.push_back(minHeap.top().second); // 取出數字
+            minHeap.pop();
+        }
+        return result;
+    }
+};
