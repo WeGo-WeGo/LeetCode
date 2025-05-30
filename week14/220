@@ -1,0 +1,41 @@
+class Solution {
+public:
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int indexDiff, int valueDiff) {
+        if (valueDiff < 0) return false;
+        unordered_map<long long, long long> buckets; //紀錄每個數值的bucketID;
+        long long width = (long long)valueDiff + 1; //將數值用valueDiff+1分裝，這樣同樣桶子中的差最多就是valueDiff
+
+        for (int i = 0; i < nums.size(); i++) {
+            long long num = nums[i];
+            long long bucketID = getBucketID(num, width); //取得在哪個bucket中
+
+            if (buckets.find(bucketID) != buckets.end()) {
+                return true; //同個bucket中有數值回傳true
+            }
+            if (buckets.find(bucketID - 1) != buckets.end() && abs(num - buckets[bucketID - 1]) <= valueDiff) {
+                return true;
+            }
+            if (buckets.find(bucketID + 1) != buckets.end() && abs(num - buckets[bucketID + 1]) <= valueDiff) {
+                return true; //檢查相鄰的桶中仍然符合的狀況
+            }
+
+            buckets[bucketID] = num; //將樹放入桶中
+
+            if (i >= indexDiff) {
+                long long oldbucketID = getBucketID(nums[i - indexDiff], width); 
+                buckets.erase(oldbucketID);
+            }
+        }
+
+        return false; 
+    }
+
+private:
+    long long getBucketID(long long num, long long width) {
+        if (num < 0) {
+            return (num + 1LL) / width - 1LL; //向下取整數，不然除出來會向0靠近
+        } else {
+            return num / width;
+        }
+    }
+};
