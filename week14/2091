@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int pills, int strength) {     
+        sort(tasks.begin(), tasks.end());
+        sort(workers.begin(), workers.end());
+        int left = 0, right = min((int)tasks.size(), (int)workers.size());
+        // 最多只能指派min(tasks，workers)個任務，left為最少能分配數量，right為最多可分配數量
+        while(left < right){
+            int mid = (left + right + 1) / 2;
+            if(canAssign(mid, tasks, workers, pills, strength)){
+                left = mid; // 目前之mid是可以的，找更大的
+            }
+            else{
+                right = mid - 1; // 找更小的
+            }
+        }
+        return left;
+    }
+
+private:
+    bool canAssign(int k, const vector<int>& tasks, const vector<int>& workers, int pills, int strength){
+        // multiset是自動排序的資料結構，用來找出最猛的k個工人
+        multiset<int> workerSet(workers.end() - k, workers.end());
+
+        for(int i = k - 1; i >= 0; i--){
+            int task = tasks[i]; // 從最難的任務開始
+            auto it = workerSet.lower_bound(task); // 回傳第一個大於等於task的數
+            if(it != workerSet.end()){
+                workerSet.erase(it);
+            }
+            else{
+                if(pills == 0){
+                    return false;
+                }
+                else{
+                    it = workerSet.lower_bound(task - strength);
+                    if(it == workerSet.end()) return false;
+
+                    workerSet.erase(it);
+                    pills--;
+                }
+            }
+        }
+        return true;
+    }
+};
